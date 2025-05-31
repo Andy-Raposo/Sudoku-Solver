@@ -10,52 +10,61 @@ puzzle = [
   [1, 7, 0, 0, 0, 6, 0, 0, 5]
 ]
 
-# class Board:
+class Grid:
     
-#     def __init__(self, board):
-#         self.board = board
+    def __init__(self):
+        self.grid = grid
+    # Initiates the grid within the class
+    def find_empty_cell(self):
+        for row in range(len(self.grid)):
+            for col in range(len(self.grid[row])):
+                if self.grid[row][col] == 0:
+                    return (row, col)
+        return None
+    # This finds the empty cells in the board's grid, no matter the size (usually 9x9)
 
-#     def __str__(self):
+    def num_valid_in_row(self, row, num):
+        if num not in self.grid[row]:
+            return True
+        return False
+    # Checks the validity of the number in the row calling the grid
 
-#     def find_empty_cell(self):
-#         for row in range(9):
-#             for col in range(9):
-#                 if self.board[row][col] == 0
-#                     return row, col
-#         return None
+    def num_valid_in_col(self, col, num):
+        for num in range(len(self.grid)):
+            if self.grid[row][col] == num:
+                return False
+        return True
+    # Checks the validity in the row, by measuring each num in "col" position within the rows
     
-#     def valid_in_row(self, row, num):
-#         return num not in self.board[row]
-
-#     def valid_in_col(self, col, num):
-#         return all(self.board[row][col] != num for row in range(9))
-    
-    def valid_in_square(self, row, col, num):
+    def num_valid_in_square(self, row, col, num):
         row_start = (row // 3) * 3
         col_start = (col // 3) * 3
         for row in range(row_start, row_start + 3):
-            for col in range(col_start, col_start + 3):
-                if self.board[row][col] == num:
+            for col in range (col_start, col_start + 3):
+                if self.grid[row][col] == num:
                     return False
         return True
-
-    def is_valid(self, empty, num):
-        row, col = empty
-        valid_in_row = self.valid_in_row(row, num)
-        valid_in_col = self.valid_in_col(col, num)
-        valid_in_square = self.valid_in_square(row, col, num)
-        return all([valid_in_row, valid_in_col, valid_in_square])
     
-    def solver(self):
-        next_empty = self.find_empty_cell()
-        if next_empty is None:
+    
+    def all_valid(self, row, col, num):
+        num_valid_in_row = self.num_valid_in_row(row, num)
+        num_valid_in_col = self.num_valid_in_col(col, num)
+        num_valid_in_square = self.num_valid_in_square(row, col, num)
+        # Simple call of all previous validation methods to return them
+        return all([num_valid_in_row, num_valid_in_col, num_valid_in_square]) is True:
+        # If all are true, then the number is valid to process in the solver
+    
+    def solution(self, guess, empty_cell):
+        empty_cell = self.find_empty_cell()
+        if not empty_cell:
             return True
-            
-        for guess in range (1, 10):
-            if self.is_valid(next_empty, guess):
-                row, col = next_empty
-                self.board[row][col] = guess
-                if self.solver():
+        # Checks if the puzzle is complete once there are no more empty cells
+        row, col = empty_cell
+        for guess in range(1,10):
+            if self.all_valid(row, col, num):
+                self.grid[row][col] = num
+                if self.solve():
                     return True
-                self.board[row][col] = 0
+                self.grid[row][col] = 0
         return False
+        # Core of the problem - guesses possible answers and backtracks if it finds a dead-end (unable to create a solution) until all the puzzle is complete. Since the range of answers goes from 0 to 8, there's a limited amount of iterations possible.
